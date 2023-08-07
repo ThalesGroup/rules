@@ -40,7 +40,13 @@ pip install dist/mitre_checker-0.1.0-py3-none-any.whl
 ## Usage
 
 ```sh
-falco-mitre-checker --help
+falco_mitre_checker --help
+```
+
+Example :
+
+```sh
+falco_mitre_checker -f rules/falco_rules.yaml -o /tmp/
 ```
 
 ## Build
@@ -62,6 +68,8 @@ Requirements :
 - Python >= `3.10`
 - Poetry >= `1.5.1`
 
+Install with dependencies for development : 
+
 ```sh
 poetry check
 poetry update
@@ -76,10 +84,61 @@ With coverage :
 poetry run python -m pytest falco_mitre_checker/tests --cov=falco_mitre_checker
 ```
 
+Actual coverage report :
+
+```
+---------- coverage: platform linux, python 3.10.12-final-0 ----------      
+Name                                                     Stmts   Miss  Cover
+----------------------------------------------------------------------------
+falco_mitre_checker/__init__.py                              0      0   100%
+falco_mitre_checker/__main__.py                              7      7     0%
+falco_mitre_checker/api/__init__.py                          0      0   100%
+falco_mitre_checker/api/core.py                             19     19     0%
+falco_mitre_checker/cli/__init__.py                          0      0   100%
+falco_mitre_checker/cli/core.py                             18     18     0%
+falco_mitre_checker/engine/__init__.py                       0      0   100%
+falco_mitre_checker/engine/mitre_checker.py                 46      1    98%
+falco_mitre_checker/exceptions/__init__.py                   0      0   100%
+falco_mitre_checker/exceptions/rules_exceptions.py           8      0   100%
+falco_mitre_checker/models/__init__.py                       0      0   100%
+falco_mitre_checker/models/falco_mitre_errors.py            16      0   100%
+falco_mitre_checker/models/falco_mitre_relations.py         14      2    86%
+falco_mitre_checker/parsers/__init__.py                      0      0   100%
+falco_mitre_checker/parsers/falco_rules.py                  30      1    97%
+falco_mitre_checker/parsers/mitre_stix.py                   31      4    87%
+falco_mitre_checker/tests/__init__.py                        0      0   100%
+falco_mitre_checker/tests/engine/__init__.py                 0      0   100%
+falco_mitre_checker/tests/engine/test_mitre_checker.py      41      0   100%
+falco_mitre_checker/tests/parsers/__init__.py                0      0   100%
+falco_mitre_checker/tests/parsers/test_falco_rules.py       18      0   100%                                                                
+falco_mitre_checker/tests/parsers/test_mitre_stix.py        34      0   100%                                                                
+falco_mitre_checker/tests/test_common.py                    13      2    85%                                                                
+falco_mitre_checker/utils/__init__.py                        0      0   100%                                                                
+falco_mitre_checker/utils/file.py                           10      0   100%                                                                
+falco_mitre_checker/utils/logger.py                         36      7    81%                                                                
+----------------------------------------------------------------------------                                                                
+TOTAL                                                      341     61    82%
+```
+
 ### Security
 
 You should run a vulnerability scanner every time you add a new dependency in projects :
 
 ```sh
 poetry run python -m safety check
+```
+
+Actual vulnerability report :
+
+```
+  Using non-commercial database
+  Found and scanned 32 packages
+  Timestamp 2023-08-07 10:38:45
+  0 vulnerabilities found
+  0 vulnerabilities ignored
++==========================================================================================================================================+
+
+ No known security vulnerabilities found. 
+
++==========================================================================================================================================+
 ```

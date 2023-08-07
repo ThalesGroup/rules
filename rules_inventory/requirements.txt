@@ -1,6 +1,0 @@
-pandas
-pyyaml
-tabulate
-# build the falco mitre checker first
-# follow instructions in build/mitre_checker/README.md
-../build/mitre_checker/dist/falco_mitre_checker-0.1.0-py3-none-any.whl
