@@ -495,7 +495,7 @@
   output: A shell configuration file has been modified (file=%fd.name pcmdline=%proc.pcmdline evt_type=%evt.type user=%user.name user_uid=%user.uid user_loginuid=%user.loginuid process=%proc.name proc_exepath=%proc.exepath parent=%proc.pname command=%proc.cmdline terminal=%proc.tty exe_flags=%evt.arg.flags %container.info)
   priority:
     WARNING
-  tags: [maturity_incubating, host, container, filesystem, mitre_persistence, T1546.004]
+  tags: [maturity_incubating, host, container, filesystem, mitre_privilege_escalation, mitre_persistence, T1546.004]
 
 # This rule is not enabled by default, as there are many legitimate
 # readers of shell config files.
@@ -511,7 +511,7 @@
   output: A shell configuration file was read by a non-shell program (file=%fd.name evt_type=%evt.type user=%user.name user_uid=%user.uid user_loginuid=%user.loginuid process=%proc.name proc_exepath=%proc.exepath parent=%proc.pname command=%proc.cmdline terminal=%proc.tty exe_flags=%evt.arg.flags %container.info)
   priority:
     WARNING
-  tags: [maturity_sandbox, host, container, filesystem, mitre_discovery, T1546.004]
+  tags: [maturity_sandbox, host, container, filesystem, mitre_privilege_escalation, mitre_persistence, T1546.004]
 
 - macro: user_known_cron_jobs
   condition: (never_true)
@@ -526,7 +526,7 @@
   output: Cron jobs were scheduled to run (file=%fd.name evt_type=%evt.type user=%user.name user_uid=%user.uid user_loginuid=%user.loginuid process=%proc.name proc_exepath=%proc.exepath parent=%proc.pname command=%proc.cmdline terminal=%proc.tty exe_flags=%evt.arg.flags %container.info)
   priority:
     NOTICE
-  tags: [maturity_sandbox, host, container, filesystem, mitre_execution, T1053.003]
+  tags: [maturity_sandbox, host, container, filesystem, mitre_execution, mitre_privilege_escalation, mitre_persistence, T1053.003]
 
 # Use this to test whether the event occurred within a container.
 
@@ -903,7 +903,7 @@
   output: Repository files get updated (newpath=%evt.arg.newpath file=%fd.name pcmdline=%proc.pcmdline evt_type=%evt.type user=%user.name user_uid=%user.uid user_loginuid=%user.loginuid process=%proc.name proc_exepath=%proc.exepath parent=%proc.pname command=%proc.cmdline terminal=%proc.tty exe_flags=%evt.arg.flags %container.info)
   priority:
     NOTICE
-  tags: [maturity_sandbox, host, container, filesystem, mitre_execution, T1072]
+  tags: [maturity_sandbox, host, container, filesystem, mitre_execution, mitre_lateral_movement, T1072]
 
 # Users should overwrite this macro to specify conditions under which a
 # write under the binary dir is ignored. For example, it may be okay to
@@ -922,7 +922,7 @@
     and not user_known_write_below_binary_dir_activities
   output: File below a known binary directory opened for writing (file=%fd.name pcmdline=%proc.pcmdline gparent=%proc.aname[2] evt_type=%evt.type user=%user.name user_uid=%user.uid user_loginuid=%user.loginuid process=%proc.name proc_exepath=%proc.exepath parent=%proc.pname command=%proc.cmdline terminal=%proc.tty exe_flags=%evt.arg.flags %container.info)
   priority: ERROR
-  tags: [maturity_sandbox, host, container, filesystem, mitre_persistence, T1543]
+  tags: [maturity_sandbox, host, container, filesystem, mitre_persistence, mitre_privilege_escalation, T1543]
 
 # If you'd like to generally monitor a wider set of directories on top
 # of the ones covered by the rule Write below binary dir, you can use
@@ -975,7 +975,7 @@
     and not user_known_write_monitored_dir_conditions
   output: File below a monitored directory opened for writing (file=%fd.name pcmdline=%proc.pcmdline gparent=%proc.aname[2] evt_type=%evt.type user=%user.name user_uid=%user.uid user_loginuid=%user.loginuid process=%proc.name proc_exepath=%proc.exepath parent=%proc.pname command=%proc.cmdline terminal=%proc.tty exe_flags=%evt.arg.flags %container.info)
   priority: ERROR
-  tags: [maturity_sandbox, host, container, filesystem, mitre_persistence, T1543]
+  tags: [maturity_sandbox, host, container, filesystem, mitre_persistence, mitre_privilege_escalation, T1543]
 
 # ******************************************************************************
 # * "Directory traversal monitored file read" requires FALCO_ENGINE_VERSION 13 *
@@ -1497,7 +1497,7 @@
     and not user_known_write_rpm_database_activities
   output: rpm database opened for writing by a non-rpm program (file=%fd.name pcmdline=%proc.pcmdline evt_type=%evt.type user=%user.name user_uid=%user.uid user_loginuid=%user.loginuid process=%proc.name proc_exepath=%proc.exepath parent=%proc.pname command=%proc.cmdline terminal=%proc.tty exe_flags=%evt.arg.flags %container.info)
   priority: ERROR
-  tags: [maturity_sandbox, host, container, filesystem, software_mgmt, mitre_persistence, T1072]
+  tags: [maturity_sandbox, host, container, filesystem, software_mgmt, mitre_execution, mitre_lateral_movement, T1072]
 
 - macro: postgres_running_wal_e
   condition: (proc.pname=postgres and (proc.cmdline startswith "sh -c envdir /etc/wal-e.d/env /usr/local/bin/wal-e" or proc.cmdline startswith "sh -c envdir \"/run/etc/wal-e.d/env\" wal-g wal-push"))
@@ -1534,7 +1534,7 @@
     and not user_known_db_spawned_processes
   output: Database-related program spawned process other than itself (evt_type=%evt.type user=%user.name user_uid=%user.uid user_loginuid=%user.loginuid process=%proc.name proc_exepath=%proc.exepath parent=%proc.pname command=%proc.cmdline terminal=%proc.tty exe_flags=%evt.arg.flags %container.info)
   priority: NOTICE
-  tags: [maturity_incubating, host, container, process, database, mitre_execution, T1190]
+  tags: [maturity_incubating, host, container, process, database, mitre_initial_access, T1190]
 
 - macro: user_known_modify_bin_dir_activities
   condition: (never_true)
@@ -1559,7 +1559,7 @@
     and not exe_running_docker_save
   output: Directory below known binary directory created (directory=%evt.arg.path evt_type=%evt.type user=%user.name user_uid=%user.uid user_loginuid=%user.loginuid process=%proc.name proc_exepath=%proc.exepath parent=%proc.pname command=%proc.cmdline terminal=%proc.tty exe_flags=%evt.arg.flags %container.info)
   priority: ERROR
-  tags: [maturity_sandbox, host, container, filesystem, mitre_persistence, T1222.002]
+  tags: [maturity_sandbox, host, container, filesystem, mitre_defense_evasion, T1222.002]
 
 # This list allows for easy additions to the set of commands allowed
 # to change thread namespace without having to copy and override the
@@ -1950,7 +1950,7 @@
     and not redhat_image
   output: Privileged container started (evt_type=%evt.type user=%user.name user_uid=%user.uid user_loginuid=%user.loginuid process=%proc.name proc_exepath=%proc.exepath parent=%proc.pname command=%proc.cmdline terminal=%proc.tty exe_flags=%evt.arg.flags %container.info)
   priority: INFO
-  tags: [maturity_incubating, container, cis, mitre_execution, T1610, PCI_DSS_10.2.5]
+  tags: [maturity_incubating, container, cis, mitre_execution, mitre_defense_evasion, T1610, PCI_DSS_10.2.5]
 
 # These capabilities were used in the past to escape from containers
 - macro: excessively_capable_container
@@ -1974,7 +1974,7 @@
     and not user_privileged_containers
   output: Excessively capable container started (cap_permitted=%thread.cap_permitted evt_type=%evt.type user=%user.name user_uid=%user.uid user_loginuid=%user.loginuid process=%proc.name proc_exepath=%proc.exepath parent=%proc.pname command=%proc.cmdline terminal=%proc.tty exe_flags=%evt.arg.flags %container.info)
   priority: INFO
-  tags: [maturity_incubating, container, cis, mitre_execution, T1610]
+  tags: [maturity_incubating, container, cis, mitre_execution, mitre_defense_evasion, T1610]
 
 
 # For now, only considering a full mount of /etc as
@@ -2020,7 +2020,7 @@
     and not user_sensitive_mount_containers
   output: Container with sensitive mount started (mounts=%container.mounts evt_type=%evt.type user=%user.name user_uid=%user.uid user_loginuid=%user.loginuid process=%proc.name proc_exepath=%proc.exepath parent=%proc.pname command=%proc.cmdline terminal=%proc.tty exe_flags=%evt.arg.flags %container.info)
   priority: INFO
-  tags: [maturity_sandbox, container, cis, mitre_execution, T1610]
+  tags: [maturity_sandbox, container, cis, mitre_execution, mitre_defense_evasion, T1610]
 
 # In a local/user rules file, you could override this macro to
 # explicitly enumerate the container images that you want to run in
@@ -2039,7 +2039,7 @@
   condition: container_started and container and not allowed_containers
   output: Container started and not in allowed list (evt_type=%evt.type user_uid=%user.uid user_loginuid=%user.loginuid process=%proc.name proc_exepath=%proc.exepath parent=%proc.pname command=%proc.cmdline terminal=%proc.tty exe_flags=%evt.arg.flags %container.info)
   priority: WARNING
-  tags: [maturity_sandbox, container, mitre_lateral_movement, T1610]
+  tags: [maturity_sandbox, container, mitre_execution, mitre_defense_evasion, T1610]
 
 - macro: user_known_system_user_login
   condition: (never_true)
@@ -2207,7 +2207,7 @@
   enabled: false
   output: Interpreted program received/listened for network traffic (connection=%fd.name lport=%fd.lport rport=%fd.rport fd_type=%fd.type fd_proto=fd.l4proto evt_type=%evt.type user=%user.name user_uid=%user.uid user_loginuid=%user.loginuid process=%proc.name proc_exepath=%proc.exepath parent=%proc.pname command=%proc.cmdline terminal=%proc.tty exe_flags=%evt.arg.flags %container.info)
   priority: NOTICE
-  tags: [maturity_sandbox, host, container, network, mitre_exfiltration, TA0011]
+  tags: [maturity_sandbox, host, container, network, mitre_command_and_control, TA0011]
 
 - rule: Interpreted procs outbound network activity
   desc: Any outbound network activity performed by any interpreted program (perl, python, ruby, etc.)
@@ -2216,7 +2216,7 @@
   enabled: false
   output: Interpreted program performed outgoing network connection (connection=%fd.name lport=%fd.lport rport=%fd.rport fd_type=%fd.type fd_proto=fd.l4proto evt_type=%evt.type user=%user.name user_uid=%user.uid user_loginuid=%user.loginuid process=%proc.name proc_exepath=%proc.exepath parent=%proc.pname command=%proc.cmdline terminal=%proc.tty exe_flags=%evt.arg.flags %container.info)
   priority: NOTICE
-  tags: [maturity_sandbox, host, container, network, mitre_exfiltration, TA0011]
+  tags: [maturity_sandbox, host, container, network, mitre_command_and_control, TA0011]
 
 - list: openvpn_udp_ports
   items: [1194, 1197, 1198, 8080, 9201]
@@ -2253,7 +2253,7 @@
   enabled: false
   output: Unexpected UDP Traffic Seen (connection=%fd.name lport=%fd.lport rport=%fd.rport fd_type=%fd.type fd_proto=fd.l4proto evt_type=%evt.type user=%user.name user_uid=%user.uid user_loginuid=%user.loginuid process=%proc.name proc_exepath=%proc.exepath parent=%proc.pname command=%proc.cmdline terminal=%proc.tty exe_flags=%evt.arg.flags %container.info)
   priority: NOTICE
-  tags: [maturity_sandbox, host, container, network, mitre_exfiltration, TA0011]
+  tags: [maturity_sandbox, host, container, network, mitre_command_and_control, TA0011]
 
 # With the current restriction on system calls handled by falco
 # (e.g. excluding read/write/sendto/recvfrom/etc, this rule won't
@@ -2311,7 +2311,7 @@
     and not user_known_non_sudo_setuid_conditions
   output: Unexpected setuid call by non-sudo, non-root program (arg_uid=%evt.arg.uid evt_type=%evt.type user=%user.name user_uid=%user.uid user_loginuid=%user.loginuid process=%proc.name proc_exepath=%proc.exepath parent=%proc.pname command=%proc.cmdline terminal=%proc.tty exe_flags=%evt.arg.flags %container.info)
   priority: NOTICE
-  tags: [maturity_incubating, host, container, users, mitre_privilege_escalation, T1548.001]
+  tags: [maturity_incubating, host, container, users, mitre_privilege_escalation, mitre_defense_evasion, T1548.001]
 
 - macro: user_known_user_management_activities
   condition: (never_true)
@@ -2365,7 +2365,7 @@
     and not user_known_create_files_below_dev_activities
   output: File created below /dev by untrusted program (file=%fd.name evt_type=%evt.type user=%user.name user_uid=%user.uid user_loginuid=%user.loginuid process=%proc.name proc_exepath=%proc.exepath parent=%proc.pname command=%proc.cmdline terminal=%proc.tty exe_flags=%evt.arg.flags %container.info)
   priority: ERROR
-  tags: [maturity_sandbox, host, container, filesystem, mitre_persistence, T1543]
+  tags: [maturity_sandbox, host, container, filesystem, mitre_persistence, mitre_privilege_escalation, T1543]
 
 
 # In a local/user rules file, you could override this macro to
@@ -2405,7 +2405,7 @@
   enabled: false
   output: Outbound connection to cloud instance metadata service (connection=%fd.name lport=%fd.lport rport=%fd.rport fd_type=%fd.type fd_proto=fd.l4proto evt_type=%evt.type user=%user.name user_uid=%user.uid user_loginuid=%user.loginuid process=%proc.name proc_exepath=%proc.exepath parent=%proc.pname command=%proc.cmdline terminal=%proc.tty exe_flags=%evt.arg.flags %container.info)
   priority: NOTICE
-  tags: [maturity_sandbox, network, container, mitre_discovery, T1565]
+  tags: [maturity_sandbox, network, container, mitre_impact, T1565]
 
 # Containers from IBM Cloud
 - list: ibm_cloud_containers
@@ -2457,7 +2457,7 @@
     not user_known_contact_k8s_api_server_activities
   output: Unexpected connection to K8s API Server from container (connection=%fd.name lport=%fd.lport rport=%fd.rport fd_type=%fd.type fd_proto=fd.l4proto evt_type=%evt.type user=%user.name user_uid=%user.uid user_loginuid=%user.loginuid process=%proc.name proc_exepath=%proc.exepath parent=%proc.pname command=%proc.cmdline terminal=%proc.tty exe_flags=%evt.arg.flags %container.info)
   priority: NOTICE
-  tags: [maturity_stable, container, network, k8s, mitre_discovery, T1565]
+  tags: [maturity_stable, container, network, k8s, mitre_impact, T1565]
 
 # In a local/user rules file, list the container images that are
 # allowed to contact NodePort services from within a container. This
@@ -2474,7 +2474,7 @@
   enabled: false
   output: Unexpected K8s NodePort Connection (connection=%fd.name lport=%fd.lport rport=%fd.rport fd_type=%fd.type fd_proto=fd.l4proto evt_type=%evt.type user=%user.name user_uid=%user.uid user_loginuid=%user.loginuid process=%proc.name proc_exepath=%proc.exepath parent=%proc.pname command=%proc.cmdline terminal=%proc.tty exe_flags=%evt.arg.flags %container.info)
   priority: NOTICE
-  tags: [maturity_sandbox, network, k8s, container, mitre_persistence, T1205.001, NIST_800-53_AC-6]
+  tags: [maturity_sandbox, network, k8s, container, mitre_persistence, mitre_defense_evasion, mitre_command_and_control, T1205.001, NIST_800-53_AC-6]
 
 - list: network_tool_binaries
   items: [nc, ncat, netcat, nmap, dig, tcpdump, tshark, ngrep, telnet, mitmproxy, socat, zmap]
@@ -2730,7 +2730,7 @@
   output: Setuid or setgid bit is set via chmod (fd=%evt.arg.fd filename=%evt.arg.filename mode=%evt.arg.mode evt_type=%evt.type user=%user.name user_uid=%user.uid user_loginuid=%user.loginuid process=%proc.name proc_exepath=%proc.exepath parent=%proc.pname command=%proc.cmdline terminal=%proc.tty exe_flags=%evt.arg.flags %container.info)
   priority:
     NOTICE
-  tags: [maturity_incubating, host, container, process, users, mitre_privilege_escalation, T1548.001]
+  tags: [maturity_incubating, host, container, process, users, mitre_privilege_escalation, mitre_defense_evasion, T1548.001]
 
 - list: exclude_hidden_directories
   items: [/root/.cassandra]
@@ -2941,7 +2941,7 @@
   condition: spawned_process and container and not user_known_k8s_client_container_parens and proc.name in (k8s_client_binaries)
   output: Docker or kubernetes client executed in container (evt_type=%evt.type user=%user.name user_uid=%user.uid user_loginuid=%user.loginuid process=%proc.name proc_exepath=%proc.exepath parent=%proc.pname command=%proc.cmdline terminal=%proc.tty exe_flags=%evt.arg.flags %container.info)
   priority: WARNING
-  tags: [maturity_sandbox, container, mitre_execution, T1610]
+  tags: [maturity_sandbox, container, mitre_execution, mitre_defense_evasion, T1610]
 
 - list: user_known_packet_socket_binaries
   items: []
@@ -2954,7 +2954,7 @@
   condition: evt.type=socket and evt.arg[0] contains AF_PACKET and container and not proc.name in (user_known_packet_socket_binaries)
   output: Packet socket was created in a container (socket_info=%evt.args connection=%fd.name lport=%fd.lport rport=%fd.rport fd_type=%fd.type fd_proto=fd.l4proto evt_type=%evt.type user=%user.name user_uid=%user.uid user_loginuid=%user.loginuid process=%proc.name proc_exepath=%proc.exepath parent=%proc.pname command=%proc.cmdline terminal=%proc.tty exe_flags=%evt.arg.flags %container.info)
   priority: NOTICE
-  tags: [maturity_stable, container, network, mitre_credential_access, T1557.002]
+  tags: [maturity_stable, container, network, mitre_credential_access, mitre_collection, T1557.002]
 
 # Namespaces where the rule is enforce
 - list: namespace_scope_network_only_subnet
@@ -3016,7 +3016,7 @@
   enabled: false
   output: Network connection outside authorized port and binary (connection=%fd.name lport=%fd.lport rport=%fd.rport fd_type=%fd.type fd_proto=fd.l4proto evt_type=%evt.type user=%user.name user_uid=%user.uid user_loginuid=%user.loginuid process=%proc.name proc_exepath=%proc.exepath parent=%proc.pname command=%proc.cmdline terminal=%proc.tty exe_flags=%evt.arg.flags %container.info)
   priority: WARNING
-  tags: [maturity_sandbox, container, network, mitre_discovery, TA0011, NIST_800-53_CM-7]
+  tags: [maturity_sandbox, container, network, mitre_command_and_control, TA0011, NIST_800-53_CM-7]
 
 - macro: user_known_stand_streams_redirect_activities
   condition: (never_true)
@@ -3154,7 +3154,7 @@
   enabled: false
   output: Container launched with root user privilege (evt_type=%evt.type user=%user.name user_uid=%user.uid user_loginuid=%user.loginuid process=%proc.name proc_exepath=%proc.exepath parent=%proc.pname command=%proc.cmdline terminal=%proc.tty exe_flags=%evt.arg.flags %container.info)
   priority: INFO
-  tags: [maturity_sandbox, container, process, users, mitre_execution, T1610]
+  tags: [maturity_sandbox, container, process, users, mitre_execution, mitre_defense_evasion, T1610]
 
 # This rule helps detect CVE-2021-3156:
 # A privilege escalation to root through heap-based buffer overflow
@@ -3163,7 +3163,7 @@
   condition: spawned_process and user.uid != 0 and (proc.name=sudoedit or proc.name = sudo) and (proc.args contains -s or proc.args contains -i or proc.args contains --login) and (proc.args contains "\ " or proc.args endswith \)
   output: Detect Sudo Privilege Escalation Exploit (CVE-2021-3156) (evt_type=%evt.type user=%user.name user_uid=%user.uid user_loginuid=%user.loginuid process=%proc.name proc_exepath=%proc.exepath parent=%proc.pname command=%proc.cmdline terminal=%proc.tty exe_flags=%evt.arg.flags %container.info)
   priority: CRITICAL
-  tags: [maturity_sandbox, host, container, filesystem, users, mitre_privilege_escalation, T1548.003]
+  tags: [maturity_sandbox, host, container, filesystem, users, mitre_privilege_escalation, mitre_defense_evasion, T1548.003]
 
 - rule: Debugfs Launched in Privileged Container
   desc: > 
@@ -3298,7 +3298,7 @@
   enabled: false
   output: Detect Potential Container Breakout Exploit (CVE-2019-5736) (file=%fd.name evt_type=%evt.type user=%user.name user_uid=%user.uid user_loginuid=%user.loginuid process=%proc.name proc_exepath=%proc.exepath parent=%proc.pname command=%proc.cmdline terminal=%proc.tty exe_flags=%evt.arg.flags %container.info)
   priority: WARNING
-  tags: [maturity_sandbox, container, filesystem, mitre_initial_access, T1611]
+  tags: [maturity_sandbox, container, filesystem, mitre_privilege_escalation, T1611]
 
 - list: known_binaries_to_read_environment_variables_from_proc_files
   items: [scsi_id, argoexec]
@@ -3336,7 +3336,7 @@
   condition: ptrace_attach_or_injection and proc_name_exists and not known_ptrace_procs
   output: Detected ptrace PTRACE_ATTACH attempt (proc_pcmdline=%proc.pcmdline evt_type=%evt.type user=%user.name user_uid=%user.uid user_loginuid=%user.loginuid process=%proc.name proc_exepath=%proc.exepath parent=%proc.pname command=%proc.cmdline terminal=%proc.tty exe_flags=%evt.arg.flags %container.info)
   priority: WARNING
-  tags: [maturity_stable, host, container, process, mitre_privilege_escalation, T1055.008]
+  tags: [maturity_stable, host, container, process, mitre_privilege_escalation, mitre_defense_evasion, T1055.008]
   
 - rule: PTRACE anti-debug attempt
   desc: > 
@@ -3346,7 +3346,7 @@
   condition: evt.type=ptrace and evt.dir=> and evt.arg.request contains PTRACE_TRACEME and proc_name_exists
   output: Detected potential PTRACE_TRACEME anti-debug attempt (proc_pcmdline=%proc.pcmdline evt_type=%evt.type user=%user.name user_uid=%user.uid user_loginuid=%user.loginuid process=%proc.name proc_exepath=%proc.exepath parent=%proc.pname command=%proc.cmdline terminal=%proc.tty exe_flags=%evt.arg.flags %container.info)
   priority: NOTICE
-  tags: [maturity_stable, host, container, process, mitre_defense_evasion, T1622]
+  tags: [maturity_stable, host, container, process, mitre_defense_evasion, mitre_discovery, T1622]
 
 - macro: private_aws_credentials
   condition: >
