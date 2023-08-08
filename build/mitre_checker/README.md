@@ -31,7 +31,7 @@ Requirements :
 ./install.sh
 ```
 
-Or manualy using `pip` :
+Or mannualy using `pip` :
 
 ```sh
 pip install dist/mitre_checker-0.1.0-py3-none-any.whl
@@ -47,6 +47,101 @@ Example :
 
 ```sh
 falco_mitre_checker -f rules/falco_rules.yaml -o /tmp/
+```
+
+## Using the container image with `podman` or `docker`
+
+> Tested with `podman` 4.6.0, but it should be similar with `docker`
+
+### Building the container image
+
+```bash
+podman build -f Containerfile -t localhost/falco-mitre-checker:stable
+```
+
+### Create an alias to use it in terminal
+
+**Note**: not compatible with `fish` terminal, use `bash`.
+
+```bash
+alias falco_mitre_checker='podman run --rm --interactive        \
+                          --security-opt label=disable          \
+                          --volume "${PWD}":/pwd --workdir /pwd \
+                          localhost/falco-mitre-checker:stable'
+```
+
+or with a more explicit alias name:
+
+```bash
+alias falco_mitre_checker_container='podman run --rm --interactive \
+                          --security-opt label=disable \
+                          --volume "${PWD}":/pwd --workdir /pwd \
+                          localhost/falco-mitre-checker:stable'
+```
+
+Try the alias:
+
+```bash
+falco_mitre_checker_container --help
+```
+```
+Usage: python -m falco_mitre_checker [OPTIONS]
+
+Options:
+  -f, --file PATH                 Path to a Falco rules file. Repeat for
+                                  multiple files validation.  [required]
+  -d, --domain TEXT               Mitre ATT&CK domain name.  [default:
+                                  enterprise-attack]
+  -V, --Version TEXT              Mitre ATT&CK domain version.  [default:
+                                  13.1]
+  -o, --output-dir PATH           Path to a directory to dump the error report
+                                  for Mitre ATT&CK.
+  --install-completion [bash|zsh|fish|powershell|pwsh]
+                                  Install completion for the specified shell.
+  --show-completion [bash|zsh|fish|powershell|pwsh]
+                                  Show completion for the specified shell, to
+                                  copy it or customize the installation.
+  -h, --help                      Show this message and exit.
+```
+
+**TODO: Need to troubleshoot the following error**
+
+```bash
+falco_mitre_checker_container -f falco_mitre_checker/tests/resources/falco_rules_test.yaml -o .
+```
+```
+[INFO] Load Mitre ATT&CK STIX Data for domain 'enterprise-attack' and version '13.1'
+[INFO] Audit Falco rules file 'falco_mitre_checker/tests/resources/falco_rules_test.yaml' for Mitre ATT&CK
+Traceback (most recent call last):
+
+  File "/usr/local/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+
+  File "/usr/local/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+
+  File "/pwd/falco_mitre_checker/__main__.py", line 16, in <module>
+    main()
+
+  File "/pwd/falco_mitre_checker/__main__.py", line 9, in main
+    cli()
+
+  File "/pwd/falco_mitre_checker/cli/core.py", line 38, in cli
+    app()
+
+  File "/pwd/falco_mitre_checker/cli/core.py", line 31, in core
+    mitre_checker_engine(rules_files, mitre_domain, mitre_version, output_dir)
+
+  File "/pwd/falco_mitre_checker/api/core.py", line 33, in mitre_checker_engine
+    FalcoMitreChecker.dump_errors(errors, output_path)
+
+  File "/pwd/falco_mitre_checker/engine/mitre_checker.py", line 111, in dump_errors
+    write_file(FalcoRulesErrors(errors=falco_mitre_errors).json(), output)
+
+  File "/pwd/falco_mitre_checker/utils/file.py", line 19, in write_file
+    with open(os.path.expandvars(output), 'w') as f:
+
+PermissionError: [Errno 13] Permission denied: 'falco_rules_test_mitre_errors.json'
 ```
 
 ## Build
