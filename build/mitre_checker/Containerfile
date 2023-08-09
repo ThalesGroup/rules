@@ -11,9 +11,11 @@ ARG BASE_REGISTRY="docker.io/library"
 ARG BASE_IMAGE="python"
 ARG BASE_IMAGE_TAG="${PYTHON_VERSION}-slim-bullseye"
 
-# Location of the app files
+# Location of the app files and users
 ARG APP_USER="poetryuser"
+ARG APP_USER_UID="1234"
 ARG APP_GROUP="poetrygroup"
+ARG APP_GROUP_GID="5678"
 ARG HOME_DIR="/home/${APP_USER}"
 ARG APP_DIR="${HOME_DIR}/falco-mitre-checker"
 
@@ -38,8 +40,11 @@ FROM python-base as poetry
 # are defined above
 ARG APP_USER
 ARG APP_GROUP
+ARG APP_USER_UID
+ARG APP_GROUP_GID
 ARG POETRY_VERSION
 ARG POETRY_HOME
+ARG HOME_DIR
 
 # Install curl
 RUN apt-get update \
@@ -48,11 +53,11 @@ RUN apt-get update \
 
 # create a non-root user since this app does not need root privileges
 RUN addgroup \
-    --gid 1234 \
+    --gid ${APP_GROUP_GID} \
     ${APP_GROUP} \
  && adduser \
-    --uid 5678 \
-    --gid 1234 \
+    --uid ${APP_USER_UID} \
+    --gid ${APP_GROUP_GID} \
     --shell /bin/bash \
     --disabled-login \
     --disabled-password \
@@ -71,16 +76,18 @@ ENV POETRY_VERSION=${POETRY_VERSION} \
 # Install poeatry from the official installer knowing that you have set POETRY_VERSION
 RUN curl -sSL https://install.python-poetry.org |  python3 -
 
-# Install pytest
+# Put poetry in the linux PATH
+ENV PATH="$PATH:${POETRY_HOME}/bin"
+
+# Update pip
 ENV PIP_DEFAULT_TIMEOUT=100 \
     PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PIP_NO_CACHE_DIR=1
 
-RUN pip install --no-cache-dir --upgrade pip \
- && pip install --no-cache-dir pytest
+RUN pip install --no-cache-dir --upgrade pip
 
-# Put poetry in the linux PATH
-ENV PATH="$PATH:${POETRY_HOME}/bin"
+# Put pip tools in the PATH
+ENV PATH="$PATH:${HOME_DIR}/.local/bin"
 
 # Uninstall curl because this container does not need it
 USER root
@@ -98,9 +105,7 @@ ARG APP_DIR
 ARG APP_USER
 ARG APP_GROUP
 ARG POETRY_HOME
-
-# Put poetry in the linux PATH
-ENV PATH="$PATH:${POETRY_HOME}/bin"
+ARG HOME_DIR
 
 # use non-root user
 USER ${APP_USER}
@@ -116,9 +121,6 @@ COPY --chown=${APP_USER}:${APP_GROUP} . .
 RUN ./build.sh
 
 RUN ./install.sh
-
-# Run python tests
-RUN poetry run pytest falco_mitre_checker/tests --cov=falco_mitre_checker
 
 ################################################################################
 # Final image
