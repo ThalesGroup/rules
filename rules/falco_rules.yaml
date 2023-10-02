@@ -837,7 +837,7 @@
     and not user_known_contact_k8s_api_server_activities
   output: Unexpected connection to K8s API Server from container (connection=%fd.name lport=%fd.lport rport=%fd.rport fd_type=%fd.type fd_proto=fd.l4proto evt_type=%evt.type user=%user.name user_uid=%user.uid user_loginuid=%user.loginuid process=%proc.name proc_exepath=%proc.exepath parent=%proc.pname command=%proc.cmdline terminal=%proc.tty exe_flags=%evt.arg.flags %container.info)
   priority: NOTICE
-  tags: [maturity_stable, container, network, k8s, mitre_discovery, T1565]
+  tags: [maturity_stable, container, network, k8s, mitre_impact, T1565]
 
 - rule: Netcat Remote Code Execution in Container
   desc: > 
@@ -998,7 +998,7 @@
     and not proc.name in (user_known_packet_socket_binaries)
   output: Packet socket was created in a container (socket_info=%evt.args connection=%fd.name lport=%fd.lport rport=%fd.rport fd_type=%fd.type fd_proto=fd.l4proto evt_type=%evt.type user=%user.name user_uid=%user.uid user_loginuid=%user.loginuid process=%proc.name proc_exepath=%proc.exepath parent=%proc.pname command=%proc.cmdline terminal=%proc.tty exe_flags=%evt.arg.flags %container.info)
   priority: NOTICE
-  tags: [maturity_stable, container, network, mitre_credential_access, T1557.002]
+  tags: [maturity_stable, container, network, mitre_credential_access, mitre_collection, T1557.002]
 
 - macro: user_known_stand_streams_redirect_activities
   condition: (never_true)
@@ -1108,7 +1108,7 @@
     and not known_ptrace_procs
   output: Detected ptrace PTRACE_ATTACH attempt (proc_pcmdline=%proc.pcmdline evt_type=%evt.type user=%user.name user_uid=%user.uid user_loginuid=%user.loginuid process=%proc.name proc_exepath=%proc.exepath parent=%proc.pname command=%proc.cmdline terminal=%proc.tty exe_flags=%evt.arg.flags %container.info)
   priority: WARNING
-  tags: [maturity_stable, host, container, process, mitre_privilege_escalation, T1055.008]
+  tags: [maturity_stable, host, container, process, mitre_privilege_escalation, mitre_defense_evasion, T1055.008]
   
 - rule: PTRACE anti-debug attempt
   desc: > 
@@ -1121,7 +1121,7 @@
     and proc_name_exists
   output: Detected potential PTRACE_TRACEME anti-debug attempt (proc_pcmdline=%proc.pcmdline evt_type=%evt.type user=%user.name user_uid=%user.uid user_loginuid=%user.loginuid process=%proc.name proc_exepath=%proc.exepath parent=%proc.pname command=%proc.cmdline terminal=%proc.tty exe_flags=%evt.arg.flags %container.info)
   priority: NOTICE
-  tags: [maturity_stable, host, container, process, mitre_defense_evasion, T1622]
+  tags: [maturity_stable, host, container, process, mitre_defense_evasion, mitre_discovery, T1622]
 
 - macro: private_aws_credentials
   condition: >
