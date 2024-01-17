@@ -1,7 +1,9 @@
-# Build the mitre_checker tool as a containerised tool from its file
-# build/mitre_checker/Containerfile
+# Build the mitre_checker python tool as a containerised tool from its
+# Containerfile lacated at "build/mitre_checker/Containerfile".
 
-# Using Kaniko: https://github.com/marketplace/actions/kaniko-action
+# Using Kaniko: refer to the following documentations:
+# * https://github.com/marketplace/actions/kaniko-action
+# * https://github.com/int128/kaniko-action#inputs
 
 name: "Build the mitre_checker tool as a containerised tool and push to GitHub Container Registry (GHCR)"
 
@@ -46,4 +48,4 @@ jobs:
           cache-repository: ghcr.io/${{ github.repository }}/cache
           file: ${{ env.CONTAINERFILE_NAME }}
           context: ${{ env.KANIKO_BUILD_CONTEXT }}
-          verbosity: "debug"  # https://github.com/GoogleContainerTools/kaniko#flag---verbosity
+          verbosity: "info"  # https://github.com/GoogleContainerTools/kaniko#flag---verbosity
