@@ -13,6 +13,7 @@ on:
   push:
     branches:
       - main
+      - containerfile # Only for testing the github action
 
 # Global KANIKO Variables:
 # See: https://github.com/int128/kaniko-action
